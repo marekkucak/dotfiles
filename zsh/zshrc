@@ -1,0 +1,95 @@
+# ~/.zshrc — clean productivity shell
+
+# ---------- PATH ----------
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:/usr/local/bin:/snap/bin:$PATH"
+
+# ---------- Toolchains ----------
+# Rust (rustup)
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+# Optional: NVM (uncomment if you use it)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+
+# ---------- Zsh completion ----------
+autoload -Uz compinit
+compinit
+
+# ---------- fzf (keybindings + completion if available) ----------
+# Ubuntu often installs these docs; source them if they exist.
+[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+[ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
+
+# ---------- Prompt ----------
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+
+# ---------- direnv ----------
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+
+# ---------- zoxide ----------
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+
+# ---------- atuin ----------
+command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh)"
+
+# ---------- Editor ----------
+export EDITOR='nvim'
+export VISUAL='nvim'
+
+# ---------- History ----------
+HISTSIZE=100000
+SAVEHIST=100000
+setopt APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt INTERACTIVE_COMMENTS
+setopt AUTO_CD
+
+# ---------- Aliases ----------
+alias vim='nvim'
+alias v='nvim'
+alias ta='tmux attach -t'
+alias tls='tmux ls'
+alias ff='fzf'
+
+# Ubuntu compatibility aliases
+command -v batcat >/dev/null 2>&1 && alias bat='batcat'
+command -v batcat >/dev/null 2>&1 && alias cat='batcat --paging=never'
+command -v fdfind >/dev/null 2>&1 && alias fd='fdfind'
+
+# Modern ls (eza)
+command -v eza >/dev/null 2>&1 && alias ls='eza --group-directories-first --icons'
+command -v eza >/dev/null 2>&1 && alias ll='eza -lah --group-directories-first --icons'
+
+# ---------- Project helpers ----------
+# Jump to a repo under ~/dev (adjust root if you use /mnt/c/Repos)
+p() {
+  local root="${1:-$HOME/dev}"
+  local dir
+  dir="$(find "$root" -maxdepth 4 -type d -name .git -prune -print 2>/dev/null \
+    | sed 's|/\.git$||' | fzf)"
+  [ -n "$dir" ] && cd "$dir"
+}
+
+# Create/attach a tmux session named after current folder
+workon() {
+  local session
+  session="$(basename "$PWD" | tr '.' '_')"
+  tmux new-session -A -s "$session"
+}
+
+# Set Path to autin
+export PATH="$HOME/.atuin/bin:$HOME/.local/bin:$HOME/.cargo/bin:/usr/local/bin:/snap/bin:$PATH"
+
+# Make Ubuntu’s batcat and fdfind behave like bat and fd
+command -v batcat >/dev/null 2>&1 && alias bat='batcat'
+command -v batcat >/dev/null 2>&1 && alias cat='batcat --paging=never'
+command -v fdfind >/dev/null 2>&1 && alias fd='fdfind'
+
+# Starship + direnv + zoxide hooks (the core trio)
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+command -v direnv   >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+command -v zoxide   >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+#

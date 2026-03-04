@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="${1:-$PWD}"
+PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)"
+PROJECT_NAME="$(basename "$PROJECT_DIR" | tr '.' '_' | tr ' ' '_' )"
+
+if ! command -v tmux >/dev/null 2>&1; then
+  echo "tmux not found. Install it first: sudo apt install -y tmux"
+  exit 1
+fi
+
+if ! tmux has-session -t "$PROJECT_NAME" 2>/dev/null; then
+  tmux new-session -d -s "$PROJECT_NAME" -c "$PROJECT_DIR" -n brief
+
+  # Window 1: brief
+  if [ -f "$PROJECT_DIR/AGENTS.md" ]; then
+    tmux send-keys -t "$PROJECT_NAME:brief" 'nvim AGENTS.md' C-m
+  else
+    tmux send-keys -t "$PROJECT_NAME:brief" 'ls -la' C-m
+  fi
+
+  # Window 2: code
+  tmux new-window -t "$PROJECT_NAME" -n code -c "$PROJECT_DIR"
+  tmux send-keys -t "$PROJECT_NAME:code" 'nvim .' C-m
+
+  # Window 3: verify
+  tmux new-window -t "$PROJECT_NAME" -n verify -c "$PROJECT_DIR"
+
+  # Window 4: run
+  tmux new-window -t "$PROJECT_NAME" -n run -c "$PROJECT_DIR"
+
+  # Window 5: git
+  tmux new-window -t "$PROJECT_NAME" -n git -c "$PROJECT_DIR"
+  tmux send-keys -t "$PROJECT_NAME:git" 'git status' C-m
+
+  # Window 6: agent
+  tmux new-window -t "$PROJECT_NAME" -n agent -c "$PROJECT_DIR"
+
+  # Window 7: logs
+  tmux new-window -t "$PROJECT_NAME" -n logs -c "$PROJECT_DIR"
+
+  tmux select-window -t "$PROJECT_NAME:brief"
+fi
+
+exec tmux attach -t "$PROJECT_NAME"
