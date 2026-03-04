@@ -33,10 +33,9 @@ say "Symlinking twork"
 ln -sf "$REPO_DIR/bin/twork" "$HOME/.local/bin/twork"
 chmod +x "$REPO_DIR/bin/twork"
 
-say "Optional: zsh + gitconfig if present"
+say "Optional: zsh if present"
 [ -f "$REPO_DIR/zsh/zshrc" ] && ln -sf "$REPO_DIR/zsh/zshrc" "$HOME/.zshrc"
 [ -f "$REPO_DIR/zsh/zprofile" ] && ln -sf "$REPO_DIR/zsh/zprofile" "$HOME/.zprofile"
 [ -f "$REPO_DIR/zsh/zshenv" ] && ln -sf "$REPO_DIR/zsh/zshenv" "$HOME/.zshenv"
-[ -f "$REPO_DIR/git/gitconfig" ] && ln -sf "$REPO_DIR/git/gitconfig" "$HOME/.gitconfig"
 
 say "Done."

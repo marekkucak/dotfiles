@@ -1,0 +1,22 @@
+# OS / editor noise
+.DS_Store
+*~
+*.swp
+*.swo
+*.swn
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VSCode
+.vscode/
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.tmp
