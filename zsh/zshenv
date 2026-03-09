@@ -1,3 +1,22 @@
-. "$HOME/.cargo/env"
+# zsh/zshenv
+# Keep this minimal: it is loaded by every zsh invocation.
 
-. "$HOME/.atuin/bin/env"
+# Resolve repo root from the symlinked ~/.zshenv
+if [[ -z "${DOTFILES_ROOT:-}" ]] && command -v readlink >/dev/null 2>&1 && [[ -L "$HOME/.zshenv" ]]; then
+  export DOTFILES_ROOT="$(cd "$(dirname "$(readlink -f "$HOME/.zshenv")")/.." && pwd)"
+fi
+
+# Minimal PATH that should exist for all shells
+typeset -U path PATH
+path=(
+  "$HOME/.local/bin"
+  "$HOME/.cargo/bin"
+  "/usr/local/bin"
+  "/snap/bin"
+  $path
+)
+export PATH
+
+# Existing toolchain envs, if present
+[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+[[ -f "$HOME/.atuin/bin/env" ]] && . "$HOME/.atuin/bin/env"
