@@ -1,247 +1,443 @@
-# dev-stack-dotfiles (WSL Ubuntu)
+# Zsh Developer Shell
 
-Minimal reproducible development cockpit for tmux + Neovim + agentic coding workflows.
+This repository configures **Zsh as a fast developer shell** optimized for:
 
-Reproducible terminal-first dev cockpit for agentic coding:
+* AI-assisted coding
+* large Git repositories
+* tmux-based development
+* command-line workflows
+* Databricks / Python / infrastructure work
 
-- **Zsh** (lightweight, fast)
-- **tmux** (project cockpit + Catppuccin + TPM)
-- **Neovim** (lazy.nvim, Telescope + fzf-native, Harpoon, Oil, Flash, Mason, LSP, format/lint, Diffview, Neotest, Copilot + CopilotChat)
-- **twork**: project launcher that creates a consistent tmux workspace per repo
+The goal is **speed and ergonomics**, not heavy shell frameworks.
 
-Designed for **WSL + Windows Terminal**.
+Key tools used:
+
+| Tool                      | Purpose                                   |
+| ------------------------- | ----------------------------------------- |
+| Zsh native completion     | fast TAB completion                       |
+| `fzf`                     | fuzzy finder for files, history and paths |
+| `fzf-tab`                 | interactive completion UI                 |
+| `zoxide`                  | intelligent `cd` replacement              |
+| `atuin`                   | advanced shell history                    |
+| `direnv`                  | project-specific environment variables    |
+| `zsh-autosuggestions`     | inline command suggestions                |
+| `zsh-syntax-highlighting` | highlight mistakes before execution       |
+| `starship`                | lightweight prompt                        |
 
 ---
 
-## Quick install
+# Installation
 
-### 1) Clone the repo
+Clone the repository and run bootstrap:
 
 ```bash
-git clone <YOUR_REPO_URL> /mnt/c/Repos/dev-stack-dotfiles
-cd /mnt/c/Repos/dev-stack-dotfiles
-```
-
-### 2) Run bootstrap
-```bash
+git clone https://github.com/marekkucak/dotfiles.git
+cd dotfiles
 bash bootstrap/install.sh
-```
-
-### 3) Restart your shell
-```bash
 exec zsh
 ```
 
-### 4) tmux plugins (first time only)
+The bootstrap script installs:
 
-Start tmux:
+* zsh
+* tmux
+* fzf
+* direnv
+* zsh plugins
+* development tools
 
-```bash
-tmux
+and creates symlinks for:
+
+```
+~/.zshrc
+~/.zshenv
+~/.tmux.conf
+~/.config/nvim
 ```
 
-Install plugins: press `Ctrl-a`, then `I` (capital i)
+---
 
-### 5) Neovim plugins
+# Zsh Usage Guide
 
-Start Neovim:
+## TAB Completion
 
-```bash
-nvim
+Zsh completion is configured for:
+
+* interactive selection
+* case-insensitive matching
+* completion caching
+* grouped output
+
+Example:
+
+```
+git che<TAB>
 ```
 
-Install/update plugins:
+Shows:
 
-Run `:Lazy sync`
-
-Install LSP servers:
-
-Run `:Mason`
-
-Ensure `pyright` and `lua_ls` are installed
-
-## Git configuration
-
-This repository does not manage `~/.gitconfig`.
-
-Git identity is intentionally left to the user because:
-
-- many developers use different identities (work vs personal)
-- overriding `~/.gitconfig` can break existing setups
-- commit email should match your GitHub/GitLab account
-
-If Git complains about missing identity, configure it manually:
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
+```
+checkout
+cherry-pick
+check-ignore
 ```
 
-Verify:
+With **fzf-tab**, you can search the completion list.
 
-```bash
-git config --global --list
+---
+
+# Fuzzy Finder (fzf)
+
+`fzf` enables fuzzy search across the shell.
+
+## History search
+
+Press:
+
+```
+CTRL + R
 ```
 
-## What bootstrap links on your machine
+Search previous commands interactively.
 
-The install script symlinks these files so your machine uses the repo version:
+Example:
 
-- `~/.tmux.conf` → `tmux/tmux.conf`
-- `~/.config/nvim` → `nvim/`
-- `~/.local/bin/twork` → `bin/twork`
-- `~/.zshrc` → `zsh/zshrc`
-- `~/.zshenv` → `zsh/zshenv`
-
-Git configuration (`~/.gitconfig`) is intentionally NOT managed by this repository.
-
-This means: update a file in the repo → your live setup updates immediately.
-
-## tmux keys
-
-Prefix: `Ctrl-a`
-
-### Splits
-
-- `Ctrl-a |` : split (left/right)
-- `Ctrl-a -` : split (top/bottom)
-
-### Move between panes
-
-- `Ctrl-a h/j/k/l`
-
-### Move between windows (tabs)
-
-- `Ctrl-a Ctrl-h` : previous window
-- `Ctrl-a Ctrl-l` : next window
-
-### Resize panes
-
-- `Ctrl-a H/J/K/L`
-
-### Reload tmux config
-
-- `Ctrl-a r`
-
-### Copy to Windows clipboard (copy-mode-vi)
-
-1. Enter copy-mode (default tmux keybind is usually `Ctrl-a [`)
-2. Select text
-3. Press `y` to copy via `clip.exe`
-
-## Project cockpit: twork
-
-Launch a project session:
-
-```bash
-twork /mnt/c/Repos/dev-stack
+```
+pytest
 ```
 
-Creates a tmux session named after the folder with windows:
+Find all previous pytest commands.
 
-- `brief` (opens `AGENTS.md` if present)
-- `code` (opens `nvim .`)
-- `verify`
-- `run`
-- `git` (runs `git status`)
-- `agent`
-- `logs`
+---
 
-This is the core “cockpit” idea: each repo has a consistent workspace layout.
+## File selection
 
-## Neovim keys
+Press:
 
-Leader: `Space`
+```
+CTRL + T
+```
 
-### Navigation (Telescope)
+This inserts a file path into the command.
 
-- `<leader>ff` : find files (git root if available)
-- `<leader>fg` : live grep
-- `<leader>fb` : buffers
-- `<leader>fr` : recent files
+Example:
 
-### Harpoon
+```
+vim <CTRL-T>
+```
 
-- `<leader>ha` : add file
-- `<leader>hh` : menu
-- `<leader>1..4` : jump to slots
+Pick a file.
 
-### Oil
+---
 
-- `-` : open parent directory
+## Directory jump
 
-### Flash
+Press:
 
-- `<leader>j` : quick jump
+```
+ALT + C
+```
 
-### LSP
+Select a directory and jump to it.
 
-- `gd` : definition
-- `gr` : references
-- `K` : hover
-- `<leader>rn` : rename
-- `<leader>ca` : code action
-- `[d` / `]d` : prev/next diagnostic
-- `<leader>fd` : line diagnostics
+---
 
-### Format / lint
+## Fuzzy completion
 
-- `<leader>cf` : format buffer
-- `<leader>cl` : lint buffer now
+You can search for files using:
 
-### Git review
+```
+vim **<TAB>
+```
 
-- `<leader>gd` : Diffview open
-- `<leader>gq` : Diffview close
-- `<leader>gh` : file history
+or
 
-### Tests (neotest)
+```
+cd **<TAB>
+```
 
-- `<leader>tn` : run nearest
-- `<leader>tf` : run file
-- `<leader>ts` : toggle summary
-- `<leader>to` : open output
+This opens a fuzzy search for matching paths.
 
-### AI
+---
 
-- Copilot accept: `Ctrl-l` (insert mode)
-- CopilotChat: `<leader>cc`
+# zoxide – smarter `cd`
 
-## Agentic coding workflow (how to use this stack)
+`zoxide` remembers frequently used directories.
 
-This stack is designed for “spec → implement → verify → review” loops with an AI agent.
+Instead of:
 
-### Recommended loop per ticket
+```
+cd ~/dev/projects/my-long-project-name
+```
 
-1.  **brief window**
-    - open `AGENTS.md`
-    - open or create a ticket/spec file (e.g. `docs/specs/TICKET-123.md`)
-    - write a tight definition of done (DoD)
-2.  **agent window**
-    - run Copilot CLI (or your allowed agent tool)
-    - give it the spec + repo rules (`AGENTS.md`) and request a small diff
-3.  **code window**
-    - inspect/edit the changes in Neovim
-4.  **verify window**
-    - run tests, lint, typecheck
-5.  **git window**
-    - review changes (`git status`, `git diff`)
-    - open Diffview in Neovim for review (`<leader>gd`)
-6.  **logs/run windows**
-    - run server / tail logs if needed
+You can use:
 
-### Why tmux matters for agentic coding
+```
+z project
+```
 
-Agentic tools often need:
+or
 
-- a stable working directory,
-- long-running commands,
-- dedicated panes/windows for logs/tests.
+```
+z dotfiles
+```
 
-`tmux` gives you that structure and makes “agent + human review + verification” smooth and repeatable.
+The more often you visit a directory, the easier it becomes to jump there.
 
-## Notes / philosophy
+---
 
-- Search-first workflow (Telescope + Harpoon) is faster than file trees for coding flow.
-- Tree-sitter intentionally omitted for stability; regex highlighting is sufficient for this workflow.
-- LSP uses Neovim 0.11+ native API with Mason managing server binaries.
+# Atuin – better shell history
+
+Atuin replaces the basic shell history.
+
+Benefits:
+
+* full-text search
+* context aware history
+* shared history across sessions
+* faster recall of long commands
+
+Use:
+
+```
+CTRL + R
+```
+
+to search history.
+
+---
+
+# direnv – project environments
+
+`direnv` automatically loads environment variables for a project.
+
+Example `.envrc`:
+
+```
+layout python
+export OPENAI_API_KEY=...
+```
+
+Activate:
+
+```
+direnv allow
+```
+
+Now the environment loads automatically when entering the directory.
+
+This avoids polluting `~/.zshrc` with project-specific configuration.
+
+---
+
+# Autosuggestions
+
+Inline suggestions appear based on command history.
+
+Example:
+
+```
+git che
+```
+
+Suggestion:
+
+```
+git checkout main
+```
+
+Accept suggestion with:
+
+```
+→ (right arrow)
+```
+
+---
+
+# Syntax highlighting
+
+Commands are highlighted before execution.
+
+Example:
+
+```
+git chec
+```
+
+will appear in **red** because the command does not exist.
+
+This helps prevent mistakes.
+
+---
+
+# Repository navigation helpers
+
+Several helper commands are provided.
+
+## `p`
+
+Search repositories and jump to one.
+
+```
+p
+```
+
+Select repository using fuzzy search.
+
+---
+
+## `pw`
+
+Open a repository and start the **tmux developer cockpit**.
+
+```
+pw
+```
+
+---
+
+# AI Development Helpers
+
+These shortcuts help with AI-driven development workflows.
+
+## Open agent rules
+
+```
+vagents
+```
+
+Opens:
+
+```
+AGENTS.md
+```
+
+---
+
+## Open latest specification
+
+```
+vspec
+```
+
+Opens newest file in:
+
+```
+docs/specs
+```
+
+---
+
+## Open architecture decision records
+
+```
+vadr
+```
+
+Opens newest file in:
+
+```
+docs/adrs
+```
+
+---
+
+# Git helpers
+
+Useful aliases:
+
+| Alias | Command         |
+| ----- | --------------- |
+| `gs`  | git status      |
+| `gd`  | git diff        |
+| `gds` | git staged diff |
+| `gl`  | git log graph   |
+
+---
+
+# Development workflow shortcuts
+
+For repositories using the AI coding workflow:
+
+```
+spec → plan → implement → verify → integrate
+```
+
+Aliases are provided:
+
+| Alias   | Command                |
+| ------- | ---------------------- |
+| `pint`  | `make pre-integration` |
+| `vfy`   | `make verify`          |
+| `integ` | `make integration`     |
+
+Example cycle:
+
+```
+vspec
+pint
+gd
+vfy
+```
+
+---
+
+# tmux Developer Cockpit
+
+The repository includes a script:
+
+```
+twork
+```
+
+It creates a tmux workspace with panes for:
+
+* editor
+* terminal
+* git
+* tests
+
+Example:
+
+```
+twork .
+```
+
+---
+
+# Philosophy
+
+This setup follows a few principles:
+
+1. **Terminal first**
+2. **Keyboard driven**
+3. **Fast startup**
+4. **Minimal shell frameworks**
+5. **Composable tools**
+
+The shell is intentionally kept lightweight while integrating powerful utilities.
+
+---
+
+# Future Improvements
+
+Planned additions:
+
+* git-aware repo jump
+* interactive project selector
+* Databricks CLI integration
+* AI-coding command helpers
+
+---
+```
+Zsh
+   ↓
+fzf / zoxide / atuin
+   ↓
+tmux cockpit
+   ↓
+Neovim IDE
+   ↓
+AI coding agents
+```
+
